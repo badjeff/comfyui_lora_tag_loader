@@ -43,7 +43,7 @@ class LoraTagLoader:
                 continue
             lora_name = None
             for lora_file in lora_files:
-                if Path(lora_file).name.startswith(name):
+                if Path(lora_file).name.startswith(name) or lora_file.startswith(name):
                     lora_name = lora_file
                     break
             if lora_name == None:
