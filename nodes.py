@@ -39,11 +39,24 @@ class LoraTagLoader:
         for f in founds:
             tag = f[1:-1]
             pak = tag.split(":")
-            (type, name, wModel) = pak[:3]
-            wClip = wModel
-            if len(pak) > 3:
-                wClip = pak[3]
+            type = pak[0]
             if type != 'lora':
+                continue
+            name = None
+            if len(pak) > 1 and len(pak[1]) > 0:
+                name = pak[1]
+            else:
+                continue
+            wModel = wClip = 0
+            try:
+                if len(pak) > 2 and len(pak[2]) > 0:
+                    wModel = float(pak[2])
+                    wClip = wModel
+                if len(pak) > 3 and len(pak[3]) > 0:
+                    wClip = float(pak[3])
+            except ValueError:
+                continue
+            if name == None:
                 continue
             lora_name = None
             for lora_file in lora_files:
@@ -53,7 +66,7 @@ class LoraTagLoader:
             if lora_name == None:
                 print(f"bypassed lora tag: { (type, name, wModel, wClip) } >> { lora_name }")
                 continue
-            # print(f"detected lora tag: { (type, name, wModel, wClip) } >> { lora_name }")
+            print(f"detected lora tag: { (type, name, wModel, wClip) } >> { lora_name }")
 
             lora_path = folder_paths.get_full_path("loras", lora_name)
             lora = None
@@ -69,9 +82,7 @@ class LoraTagLoader:
                 lora = comfy.utils.load_torch_file(lora_path, safe_load=True)
                 self.loaded_lora = (lora_path, lora)
 
-            strength_model = float(wModel)
-            strength_clip = float(wClip)
-            model_lora, clip_lora = comfy.sd.load_lora_for_models(model_lora, clip_lora, lora, strength_model, strength_clip)
+            model_lora, clip_lora = comfy.sd.load_lora_for_models(model_lora, clip_lora, lora, wModel, wClip)
 
         plain_prompt = re.sub(self.tag_pattern, "", text)
         return (model_lora, clip_lora, plain_prompt)
