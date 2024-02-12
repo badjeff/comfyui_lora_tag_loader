@@ -9,7 +9,7 @@ import comfy.utils
 class LoraTagLoader:
     def __init__(self):
         self.loaded_lora = None
-        self.tag_pattern = "\<[0-9a-zA-Z\:\_\-\.\s\/\(\)]+\>"
+        self.tag_pattern = "\<[0-9a-zA-Z\:\_\-\.\s\/\(\)\\\\]+\>"
 
     @classmethod
     def INPUT_TYPES(s):
